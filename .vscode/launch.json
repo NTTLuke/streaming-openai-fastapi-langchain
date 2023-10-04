@@ -1,0 +1,25 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python: Current File",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+    {
+      "name": "debug fastapi app",
+      "type": "python",
+      "request": "launch",
+      "program": "C:\\Users\\nttLu\\.virtualenvs\\agm-ask2data-PdCpEBbg\\Scripts\\uvicorn.exe",
+      "args": ["--app-dir=.", "api.streaming:app", "--reload"],
+      "console": "externalTerminal",
+      "justMyCode": true
+    }
+  ]
+}
