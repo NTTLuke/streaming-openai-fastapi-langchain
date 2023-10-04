@@ -43,12 +43,16 @@ app.add_middleware(
 
 
 async def ask_chat_llm(content: str) -> AsyncIterable[str]:
+    from langchain.chains import LLMChain
+    from langchain.prompts import PromptTemplate
+
     """
     Invoking the AzureChatOpenAI model with streaming enabled and running it as async
     the callback_handler will be used to get the response from the model
     see https://python.langchain.com/docs/modules/callbacks/async_callbacks
     """
     callback_handler = AsyncIteratorCallbackHandler()
+
     llm = AzureChatOpenAI(
         deployment_name="chat",
         temperature=0,
@@ -57,17 +61,29 @@ async def ask_chat_llm(content: str) -> AsyncIterable[str]:
         callbacks=[callback_handler],
     )
 
+    # prompt example
+    prompt = PromptTemplate(
+        input_variables=["topic"],
+        template="Create a rock song lyrics starting from this topic. Use max 3 verses  : {topic}?",
+    )
+
+    # TODO: replace with the type of chain you need
+    chain = LLMChain(llm=llm, prompt=prompt, callbacks=[callback_handler])
+
     task = asyncio.create_task(
-        llm.agenerate(messages=[[HumanMessage(content=content)]])
+        # llm.agenerate(messages=[[HumanMessage(content=content)]])
+        chain.arun(content)
     )
 
     try:
         async for token in callback_handler.aiter():
             yield token
     except Exception as e:
-        # TODO: remove in production (maybe)
+        # LOL
         print(f"Bro, something went wrong ...fix it or run far away! {e}")
     finally:
+        # see on_llm_end method in the callback_handler: it seems the task is closed by design
+        # BUT just to be sure we close the task every time
         callback_handler.done.set()
 
     await task
