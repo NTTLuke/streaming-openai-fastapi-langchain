@@ -37,7 +37,9 @@ def init_fastapi() -> FastAPI:
 
 
 def init_llm_and_chain() -> Tuple[LLMChain, AsyncIteratorCallbackHandler]:
+    # ref https://python.langchain.com/docs/modules/callbacks/
     callback_handler = AsyncIteratorCallbackHandler()
+
     llm = AzureChatOpenAI(
         deployment_name="chat",
         temperature=0,
@@ -45,10 +47,13 @@ def init_llm_and_chain() -> Tuple[LLMChain, AsyncIteratorCallbackHandler]:
         verbose=True,
         callbacks=[callback_handler],
     )
+
     prompt = PromptTemplate(
         input_variables=["topic"],
         template="Create a rock song lyric starting from this topic: {topic}. Use max 3 verses.",
     )
+
+    # TODO: replace with the chain you want to use
     chain = LLMChain(llm=llm, prompt=prompt)
     return chain, callback_handler
 
