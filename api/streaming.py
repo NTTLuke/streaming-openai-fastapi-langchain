@@ -4,6 +4,8 @@ from pydantic import BaseModel
 from langchain.callbacks import AsyncIteratorCallbackHandler
 from langchain.schema import HumanMessage
 from langchain.chat_models import AzureChatOpenAI
+from langchain.chains import LLMChain
+from langchain.prompts import PromptTemplate
 
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
@@ -34,40 +36,36 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-async def ask_chat_llm(content: str) -> AsyncIterable[str]:
-    from langchain.chains import LLMChain
-    from langchain.prompts import PromptTemplate
-
-    """
+"""
     Invoking the AzureChatOpenAI model with streaming enabled and running it as async
     the callback_handler will be used to get the response from the model
     see https://python.langchain.com/docs/modules/callbacks/async_callbacks
-    """
-    callback_handler = AsyncIteratorCallbackHandler()
+"""
+callback_handler = AsyncIteratorCallbackHandler()
 
-    llm = AzureChatOpenAI(
-        deployment_name="chat",
-        temperature=0,
-        streaming=True,
-        verbose=True,
-        callbacks=[callback_handler],
-    )
+llm = AzureChatOpenAI(
+    deployment_name="chat",
+    temperature=0,
+    streaming=True,
+    verbose=True,
+    callbacks=[callback_handler],
+)
 
-    # prompt example
-    prompt = PromptTemplate(
-        input_variables=["topic"],
-        template="Create a rock song lyric starting from this topic: {topic}. Use max 3 verses.",
-    )
+# prompt example
+prompt = PromptTemplate(
+    input_variables=["topic"],
+    template="Create a rock song lyric starting from this topic: {topic}. Use max 3 verses.",
+)
 
-    # TODO: replace with the type of chain you need
-    chain = LLMChain(llm=llm, prompt=prompt, callbacks=[callback_handler])
+# TODO: replace with the type of chain you need
+chain = LLMChain(llm=llm, prompt=prompt)
 
+
+async def ask_chat_llm(content: str) -> AsyncIterable[str]:
     task = asyncio.create_task(
         # llm.agenerate(messages=[[HumanMessage(content=content)]])
         chain.arun(content)
     )
-
     try:
         async for token in callback_handler.aiter():
             yield token
