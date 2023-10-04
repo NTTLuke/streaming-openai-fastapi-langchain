@@ -64,7 +64,7 @@ async def ask_chat_llm(content: str) -> AsyncIterable[str]:
     # prompt example
     prompt = PromptTemplate(
         input_variables=["topic"],
-        template="Create a rock song lyrics starting from this topic. Use max 3 verses  : {topic}?",
+        template="Create a rock song lyric starting from this topic: {topic}. Use max 3 verses.",
     )
 
     # TODO: replace with the type of chain you need
