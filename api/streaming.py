@@ -1,10 +1,3 @@
-# TODO: ADD ENV FILE WITH THESE VARIABLES
-# OPENAI_API_TYPE=azure
-# OPENAI_API_KEY=
-# OPENAI_API_BASE=
-# OPENAI_API_VERSION=2023-03-15-preview
-
-
 from dotenv import load_dotenv
 from pydantic import BaseModel
 
