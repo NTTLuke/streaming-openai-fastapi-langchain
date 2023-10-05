@@ -9,6 +9,10 @@ from pathlib import Path
 load_dotenv()
 
 
+# TODO: store the image on cloud storage and return the URL with SAS token
+# TODO: add json output parser
+# TODO: add prompt template
+# ref: https://pub.aimind.so/building-a-custom-chat-agent-for-document-qa-with-langchain-gpt-3-5-and-pinecone-e3ae7f74e5e8
 class ImageGeneratorTool(BaseTool):
     """
     Tool to create an image from text using the HuggingFace inference endpoint.
