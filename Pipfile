@@ -11,6 +11,7 @@ fastapi = "*"
 python-dotenv = "*"
 uvicorn = "*"
 pillow = "*"
+aiohttp = "*"
 
 [dev-packages]
 

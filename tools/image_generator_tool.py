@@ -25,7 +25,7 @@ class ImageGeneratorTool(BaseTool):
     Use this tool ONLY WHEN user ask to GENERATE an image from text. 
     Do not use this tool for other purposes. 
     ONLY Keywords for using this tool are : 'generate' and 'image'.
-    Keywords for NOT using this tool are : 'tell', 'provide'
+    Keywords for NOT using this tool are : 'tell', 'provide', 'write'
     """
 
     API_URL = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0"

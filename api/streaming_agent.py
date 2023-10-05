@@ -18,6 +18,7 @@ from langchain.schema import LLMResult
 from langchain.tools import BaseTool
 
 from tools.image_generator_tool import ImageGeneratorTool
+from tools.sentimenta_tool import SentimentTool
 
 app = FastAPI()
 app.add_middleware(
@@ -42,6 +43,7 @@ memory = ConversationBufferWindowMemory(
 
 
 agent_tools = [ImageGeneratorTool()]
+agent_tools.append(SentimentTool())
 
 agent = initialize_agent(
     agent=AgentType.CHAT_CONVERSATIONAL_REACT_DESCRIPTION,

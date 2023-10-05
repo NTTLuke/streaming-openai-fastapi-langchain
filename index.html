@@ -30,7 +30,7 @@
         }
 
         #result {
-            height: 400px;
+            height: 600px;
             overflow-y: auto;
             border: 1px solid #e2e8f0;
             padding: 10px;
@@ -56,10 +56,12 @@
             padding: 12px 24px;
             border: none;
             border-radius: 8px;
-            background-color: #3182ce;
+            background-color: #b5c4c0;
             color: white;
             cursor: pointer;
             transition: background-color 0.2s;
+            /* this will make sure they are aligned vertically in the middle */
+
         }
 
         button:hover {
@@ -101,17 +103,51 @@
             padding: 10px;
             border: none;
             border-radius: 8px;
-            background-color: #225ba4;
+            background-color: #791396;
             cursor: pointer;
             transition: background-color 0.2s;
         }
 
         #preset-buttons button:hover {
-            background-color: #0b274c;
+            background-color: #510947;
         }
 
         #preset-buttons button:active {
-            background-color: #0b274c;
+            background-color: #510947;
+        }
+
+        .question,
+        .answer {
+            padding: 10px 15px;
+            margin: 5px 0;
+            border-radius: 10px;
+            max-width: 70%;
+        }
+
+        .question {
+            background-color: #e2e8f0;
+            align-self: flex-start;
+            text-align: left;
+        }
+
+        .answer {
+            background-color: #3182ce;
+            color: white;
+            align-self: flex-start;
+            text-align: left;
+
+            font-size: 16px;
+            /* Example font size */
+            line-height: 1.5;
+            /* Example line height */
+            padding: 10px;
+            /* Example padding */
+
+            min-width: calc(1ch + 20px);
+            /* Approximate width of one character + 2 * padding (left and right) */
+            margin-left: 40px;
+            max-width: 100%;
+            flex-grow: initial;
         }
     </style>
 </head>
@@ -119,7 +155,9 @@
 <body>
 
     <div class="chat-container">
-        <h1>Chat with AI</h1>
+        <h1>AI Chat</h1>
+
+
         <div id="preset-buttons">
             <button onclick="setPresetText('Tell me more about 80s rock songs')">Tell me more about 80s rock
                 songs</button>
@@ -128,12 +166,17 @@
             <button onclick="setPresetText('Tell me a joke.')">Tell me a joke.</button>
         </div>
 
+        <div id="result" style="display: flex; flex-direction: column;"></div>
 
-        <div id="result"></div>
 
-        <input type="text" id="message" placeholder="Type your message here">
-        <button onclick="sendMessage()">Send Message</button>
-        <div class="spinner" id="spinner" style="display: none;"></div>
+
+        <div>
+            <input type="text" id="message" placeholder="Type your message here">
+            <button onclick="sendMessage()">Send Message</button>
+            <div class="spinner" id="spinner" style="display: none;"></div>
+        </div>
+
+
 
         <img id="displayed-image" src="" alt="Generated Image" style="max-width: 100%; display: none;">
 
@@ -146,6 +189,12 @@
 
         async function sendMessage() {
             var message = document.getElementById("message").value;
+
+            // Append the user's question to the result div
+            let questionElem = document.createElement("div");
+            questionElem.className = "question";
+            questionElem.textContent = message;
+            document.getElementById("result").appendChild(questionElem);
 
             // Show the spinner
             document.getElementById("spinner").style.display = "block";
@@ -161,6 +210,10 @@
             var reader = response.body.getReader();
             var decoder = new TextDecoder('utf-8');
 
+            let responseElem = document.createElement("div");
+            responseElem.className = "answer";
+            elemDiv = document.getElementById("result").appendChild(responseElem)
+
             reader.read().then(function processResult(result) {
                 if (result.done) {
                     // Hide the spinner when request is done
@@ -169,16 +222,19 @@
                 }
 
                 let token = decoder.decode(result.value);
-                if (token.endsWith('.') || token.endsWith('!') || token.endsWith('?')) {
-                    document.getElementById("result").innerHTML += token + "<br>";
-                } else {
-                    document.getElementById("result").innerHTML += token + '';
-                }
-                return reader.read().then(processResult);
 
+                // Create a text node to safely insert content without parsing as HTML.
+                if (token.endsWith('.') || token.endsWith('!') || token.endsWith('?')) {
+                    elemDiv.innerHTML += token + "<br>";
+                } else {
+                    elemDiv.innerHTML += token + '';
+                }
+
+                return reader.read().then(processResult);
             });
 
         }
+
 
 
     </script>
