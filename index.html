@@ -2,49 +2,116 @@
 <html>
 
 <head>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Roboto', sans-serif;
             margin: 0;
             padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #f2f2f2;
+            background-color: #f6f9fc;
         }
 
         .chat-container {
-            border-radius: 5px;
+            border-radius: 15px;
             background-color: white;
-            padding: 20px;
-            max-width: 500px;
+            padding: 25px;
+            max-width: 800px;
             width: 100%;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        h1 {
+            font-weight: 500;
+            margin-bottom: 20px;
         }
 
         #result {
             height: 400px;
             overflow-y: auto;
-            border: 1px solid #ccc;
+            border: 1px solid #e2e8f0;
             padding: 10px;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            border-radius: 10px;
         }
 
         #message {
             width: 70%;
-            padding: 10px;
+            padding: 12px;
             margin-right: 10px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            transition: border-color 0.2s;
+        }
+
+        #message:focus {
+            border-color: #a0aec0;
+            outline: none;
         }
 
         button {
-            padding: 10px 20px;
+            padding: 12px 24px;
             border: none;
-            border-radius: 5px;
-            background-color: #007BFF;
+            border-radius: 8px;
+            background-color: #3182ce;
             color: white;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #2b6cb0;
+        }
+
+        button:active {
+            background-color: #2c5282;
+        }
+
+        .spinner {
+            display: inline-block;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid #3182ce;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            margin-left: 15px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        #preset-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        #preset-buttons button {
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            background-color: #225ba4;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        #preset-buttons button:hover {
+            background-color: #0b274c;
+        }
+
+        #preset-buttons button:active {
+            background-color: #0b274c;
         }
     </style>
 </head>
@@ -53,15 +120,36 @@
 
     <div class="chat-container">
         <h1>Chat with AI</h1>
+        <div id="preset-buttons">
+            <button onclick="setPresetText('Tell me more about 80s rock songs')">Tell me more about 80s rock
+                songs</button>
+            <button onclick="setPresetText('Generate an image from : rock musician with guitar')">Generate an image from
+                : rock musician with guitar</button>
+            <button onclick="setPresetText('Tell me a joke.')">Tell me a joke.</button>
+        </div>
+
+
         <div id="result"></div>
 
         <input type="text" id="message" placeholder="Type your message here">
         <button onclick="sendMessage()">Send Message</button>
+        <div class="spinner" id="spinner" style="display: none;"></div>
+
+        <img id="displayed-image" src="" alt="Generated Image" style="max-width: 100%; display: none;">
+
     </div>
 
     <script>
+        function setPresetText(text) {
+            document.getElementById("message").value = text;
+        }
+
         async function sendMessage() {
             var message = document.getElementById("message").value;
+
+            // Show the spinner
+            document.getElementById("spinner").style.display = "block";
+
             var response = await fetch('http://localhost:8000/stream_chat/', {
                 method: 'POST',
                 headers: {
@@ -74,7 +162,12 @@
             var decoder = new TextDecoder('utf-8');
 
             reader.read().then(function processResult(result) {
-                if (result.done) return;
+                if (result.done) {
+                    // Hide the spinner when request is done
+                    document.getElementById("spinner").style.display = "none";
+                    return;
+                }
+
                 let token = decoder.decode(result.value);
                 if (token.endsWith('.') || token.endsWith('!') || token.endsWith('?')) {
                     document.getElementById("result").innerHTML += token + "<br>";
@@ -82,10 +175,19 @@
                     document.getElementById("result").innerHTML += token + '';
                 }
                 return reader.read().then(processResult);
+
             });
 
         }
+
+
     </script>
+
+
+
+
+
+
 
 </body>
 

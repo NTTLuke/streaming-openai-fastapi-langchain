@@ -10,6 +10,7 @@ tiktoken = "*"
 fastapi = "*"
 python-dotenv = "*"
 uvicorn = "*"
+pillow = "*"
 
 [dev-packages]
 
