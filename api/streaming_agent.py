@@ -1,13 +1,10 @@
-import os
 import asyncio
 from typing import Any
 
 import uvicorn
-from fastapi import FastAPI, Body
+from fastapi import FastAPI, APIRouter, Body
 from fastapi.responses import StreamingResponse
-from queue import Queue
 from pydantic import BaseModel
-from fastapi.middleware.cors import CORSMiddleware
 
 from langchain.agents import AgentType, initialize_agent
 from langchain.chat_models import AzureChatOpenAI
@@ -15,19 +12,12 @@ from langchain.memory import ConversationBufferWindowMemory
 from langchain.callbacks.streaming_aiter import AsyncIteratorCallbackHandler
 from langchain.schema import LLMResult
 
-from langchain.tools import BaseTool
-
 from tools.image_generator_tool import ImageGeneratorTool
 from tools.sentimenta_tool import SentimentTool
 
-app = FastAPI()
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+
+router_agent = APIRouter()
+
 # initialize the agent (we need to do this for the callbacks)
 llm = AzureChatOpenAI(
     deployment_name="chat",
@@ -112,7 +102,7 @@ async def create_gen(query: str, stream_it: AsyncCallbackHandler):
     await task
 
 
-@app.post("/stream_chat/")
+@router_agent.post("/stream_chat/")
 async def chat(
     message: Message = Body(
         ..., example={"content": "Tell me more about low-fi music style."}

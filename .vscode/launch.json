@@ -17,7 +17,7 @@
       "type": "python",
       "request": "launch",
       "program": "C:\\Users\\nttLu\\.virtualenvs\\agm-ask2data-PdCpEBbg\\Scripts\\uvicorn.exe",
-      "args": ["--app-dir=.", "api.streaming_agent:app", "--reload"],
+      "args": ["--app-dir=.", "api.main:app", "--reload"],
       "console": "externalTerminal",
       "justMyCode": true
     }

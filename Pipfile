@@ -12,6 +12,12 @@ python-dotenv = "*"
 uvicorn = "*"
 pillow = "*"
 aiohttp = "*"
+chromadb = "*"
+pinecone-client = "*"
+azure-storage-blob = "*"
+pypdf = "*"
+docx2txt = "*"
+python-docx = "*"
 
 [dev-packages]
 

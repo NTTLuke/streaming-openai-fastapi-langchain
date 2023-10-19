@@ -1,39 +1,22 @@
 from dotenv import load_dotenv
 from pydantic import BaseModel
 from langchain.callbacks import AsyncIteratorCallbackHandler
-from langchain.schema import HumanMessage
 from langchain.chat_models import AzureChatOpenAI
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
-from fastapi import FastAPI
+from fastapi import APIRouter
 import asyncio
 from typing import AsyncIterable, Tuple
 
 load_dotenv()
 
 
+router_chain = APIRouter()
+
+
 class Message(BaseModel):
     content: str
-
-
-def init_fastapi() -> FastAPI:
-    """Initialize FastAPI"""
-    app = FastAPI(
-        title="Streaming API with LangChain and FastAPI",
-        description="FastAPI with LangChain and streaming endpoint",
-        version="0.1.0",
-        docs_url="/",
-    )
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=["*"],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
-    return app
 
 
 def init_llm_and_chain() -> Tuple[LLMChain, AsyncIteratorCallbackHandler]:
@@ -59,7 +42,6 @@ def init_llm_and_chain() -> Tuple[LLMChain, AsyncIteratorCallbackHandler]:
 
 
 # start the app
-app = init_fastapi()
 chain, callback_handler = init_llm_and_chain()
 
 
@@ -77,7 +59,7 @@ async def ask_chat_llm(content: str) -> AsyncIterable[str]:
     await task
 
 
-@app.post("/stream_chat/")
+@router_chain.post("/stream_chat/")
 async def stream_chat(message: Message):
     response = ask_chat_llm(message.content)
     return StreamingResponse(response, media_type="text/event-stream")
