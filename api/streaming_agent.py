@@ -2,7 +2,7 @@ import asyncio
 from typing import Any
 
 import uvicorn
-from fastapi import FastAPI, APIRouter, Body
+from fastapi import APIRouter, Body
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
@@ -34,6 +34,7 @@ memory = ConversationBufferWindowMemory(
 
 agent_tools = [ImageGeneratorTool()]
 agent_tools.append(SentimentTool())
+
 
 agent = initialize_agent(
     agent=AgentType.CHAT_CONVERSATIONAL_REACT_DESCRIPTION,
